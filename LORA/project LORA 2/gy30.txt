@@ -1,0 +1,36 @@
+#include "stm32f10x.h"
+#include "BH1750.h"
+#include "usart.h"
+#include "delay.h"
+#include "sys.h"
+#include "bmp.h"
+uchar BUF[8];
+int dis_data;
+int mcy;
+ int main(void)
+  {	float temp;
+		SystemInit();
+		GPIOConfig();
+		Init_BH1750();
+		
+		delay_init();	    		  
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 
+	uart_init(115200);	
+		delay_ms(180);
+	while(1) 
+	{		
+	Single_Write_BH1750(0x01);
+		Single_Write_BH1750(0x10);
+	delay_ms(180);
+		mread();
+		dis_data=BUF[0];
+		dis_data=BUF[1]+(dis_data<<8);
+		
+		temp=(float)dis_data/1.2;
+	
+printf("%flx\r\n",temp);  
+		delay_ms(10000);
+	}	  
+	
+}
+	

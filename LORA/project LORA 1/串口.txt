@@ -1,0 +1,7 @@
+USART1->DR=USART_RX_BUF[t];  发送数据
+
+状态寄存器  USART_SR 第六位TC 往外写数据发送完成位 数据发完之后为1
+第5位RXNE  当DR里面有数据进来的标志位 有数据为1
+
+
+ USART_DR缓存器

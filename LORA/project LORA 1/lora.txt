@@ -1,0 +1,57 @@
+
+
+#include "drv_uart.h"
+#include "drv_AS62.h"
+#include "led.h"
+#include "delay.h"
+#define __AS62_TX_MODE__								
+
+
+#ifdef __AS62_TX_MODE__
+	char *pAshining = "ashining";
+#else
+   uint8_t g_ashining[ 8 ] ={ 'a', 's', 'h', 'i', 'n', 'i', 'n', 'g' };
+	uint8_t g_As62_rx_buffer[ 100 ] = { 0 };
+	uint8_t g_RxLength = 0;
+#endif
+	
+int main( void )
+{
+	int t;
+	//∩??迆3?那??‘
+	drv_uart_init( 9600 );
+	
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); //谷豕??NVIC?D??﹞?℅谷2:2???角??車??豕??㏒?2???足車|車??豕??
+	uart_init(115200);	 //∩??迆3?那??‘?a115200
+
+	LED_Init();
+	
+	delay_init();
+	
+	while(1)
+	{     
+		
+  #ifdef __AS62_TX_MODE__
+  ASxx_tx_packet( 0x12, 0x35, 0x17, (uint8_t *)pAshining, 8 );	
+	LED0=1;
+  LED1=0;
+		delay_ms(1000);
+		LED0=1;
+		LED1=1;
+		
+		#else
+			g_RxLength = ASxx_rx_packet( g_As62_rx_buffer );
+			if( 0 != g_RxLength )
+			{
+			LED1=0;
+			LED0=0;
+		for(t=0;t<8;t++)
+			{
+				USART_SendData(USART1, g_As62_rx_buffer[t]);
+			while(USART_GetFlagStatus(USART1,USART_FLAG_TC)!=SET);
+			}
+		}
+		#endif
+		
+	}	
+		}
